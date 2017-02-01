@@ -5,6 +5,8 @@ CW @ GTCMT 2017
 import urllib
 import urllib2
 from bs4 import BeautifulSoup
+import pafy
+import os
 
 class YoutubeDownloader:
     mList = []
@@ -15,11 +17,11 @@ class YoutubeDownloader:
 
     def getYoutubeLinks(self):
         # go through the list and retrieve the top search results
-        for chartEntry in self.mList:
+        for title, artist in self.mList:
             # ==== The source following code: ====
             # http://stackoverflow.com/questions/29069444/returning-the-urls-from-a-youtube-search
             # Minor modification applied
-            searchText = str(chartEntry.title) + str(chartEntry.artist)
+            searchText = title + artist
             query = urllib.quote(searchText)
             url = "https://www.youtube.com/results?search_query=" + query
             response = urllib2.urlopen(url)
@@ -33,6 +35,30 @@ class YoutubeDownloader:
 
             self.mLinks.append(topResults[0])
         return self.mLinks
+
+
+    def getYoutubeFiles(self, links, folderName):
+
+        for url in links:
+            #==== get video object
+            video = pafy.new(url)
+            bestaudio = video.getbestaudio()
+
+            #==== take care of filenames
+            tempFilename = 'temp' + '.' + str(bestaudio.extension)
+            bestaudio.download(tempFilename)
+            folderpath = '../' + folderName
+            filename = ''.join(e for e in str(bestaudio.title) if e.isalnum())
+            outputFilePath = '../' + folderName + '/' + filename + '.mp3'
+            if not os.path.isdir(folderpath):
+                os.mkdir(folderpath)
+
+            #==== convert temp file into mp3
+            command_temp2mp3 = 'ffmpeg -i ' + tempFilename + ' -acodec libmp3lame -ab 128k ' + outputFilePath
+            os.system(command_temp2mp3)
+            command_cleanup = 'rm ' + tempFilename
+            os.system(command_cleanup)
+
 
 
 

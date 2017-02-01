@@ -32,8 +32,9 @@ class BillboardRetriever:
             inputDate = str(yyyy) + '-' + mm_str + '-' + str(dd)
             chart = billboard.ChartData(self.mChartName, inputDate)
             for i in range(0, len(chart)):
-                if not chart[i] in self.mList:
-                    self.mList.append(chart[i])
+                # check for duplications
+                if not (str(chart[i].title), str(chart[i].artist)) in self.mList:
+                    self.mList.append((str(chart[i].title), str(chart[i].artist)))
                     self.mSongCount += 1
                     if self.mSongCount >= self.mMaxSongCount:
                         break
