@@ -38,8 +38,9 @@ class YoutubeDownloader:
 
 
     def getYoutubeFiles(self, links, folderName):
-
+        c = 0
         for url in links:
+            songTitle, artist = self.mList[c]
             #==== get video object
             video = pafy.new(url)
             bestaudio = video.getbestaudio()
@@ -48,7 +49,7 @@ class YoutubeDownloader:
             tempFilename = 'temp' + '.' + str(bestaudio.extension)
             bestaudio.download(tempFilename)
             folderpath = '../' + folderName
-            filename = ''.join(e for e in bestaudio.title if e.isalnum())
+            filename = ''.join(e for e in (songTitle + artist) if e.isalnum())
             outputFilePath = '../' + folderName + '/' + str(filename) + '.mp3'
             if not os.path.isdir(folderpath):
                 os.mkdir(folderpath)
@@ -58,6 +59,7 @@ class YoutubeDownloader:
             os.system(command_temp2mp3)
             command_cleanup = 'rm ' + tempFilename
             os.system(command_cleanup)
+            c += 1
 
 
 
