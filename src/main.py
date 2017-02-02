@@ -11,14 +11,14 @@ import retrieveFiles as rf
 # rock-songs; alternative-songs; pop-songs; adult-pop-songs; r-b-hip-hop-songs;
 # r-and-b-songs; latin-songs; latin-pop-songs; dance-electronic-songs; dance-club-play-songs
 chartName = 'pop-songs'
-Retriever = rl.BillboardRetriever(chartName, '2017-01-24', 2, 1)
+Retriever = rl.BillboardRetriever(chartName, '2017-01-24', 2, 10)
 List = Retriever.getList()
-Retriever.displayList()
 
 #==== Retrieve the youtube links
 Downloader = rf.YoutubeDownloader(List)
 links = Downloader.getYoutubeLinks()
 
+Retriever.displayList()
 for link in links:
     print link
 

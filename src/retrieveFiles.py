@@ -48,8 +48,8 @@ class YoutubeDownloader:
             tempFilename = 'temp' + '.' + str(bestaudio.extension)
             bestaudio.download(tempFilename)
             folderpath = '../' + folderName
-            filename = ''.join(e for e in str(bestaudio.title) if e.isalnum())
-            outputFilePath = '../' + folderName + '/' + filename + '.mp3'
+            filename = ''.join(e for e in bestaudio.title if e.isalnum())
+            outputFilePath = '../' + folderName + '/' + str(filename) + '.mp3'
             if not os.path.isdir(folderpath):
                 os.mkdir(folderpath)
 
