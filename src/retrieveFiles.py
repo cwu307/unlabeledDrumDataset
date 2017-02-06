@@ -21,7 +21,7 @@ class YoutubeDownloader:
             # ==== The source following code: ====
             # http://stackoverflow.com/questions/29069444/returning-the-urls-from-a-youtube-search
             # Minor modification applied
-            searchText = title + artist
+            searchText = title + ' ' + artist
             query = urllib.quote(searchText)
             url = "https://www.youtube.com/results?search_query=" + query
             response = urllib2.urlopen(url)
@@ -32,14 +32,15 @@ class YoutubeDownloader:
                 youtubeLink = 'https://www.youtube.com' + vid['href']
                 topResults.append(youtubeLink)
             # ===============================================
-
-            self.mLinks.append(topResults[0])
+            if len(topResults) >= 1:
+                self.mLinks.append(topResults[0])
         return self.mLinks
 
 
-    def getYoutubeFiles(self, links, folderName):
+    def getYoutubeFiles(self, txtFile, folderName):
         c = 0
-        for url in links:
+        links = open(txtFile, 'r')
+        for url in links.readlines():
             songTitle, artist = self.mList[c]
             #==== get video object
             video = pafy.new(url)
@@ -61,8 +62,15 @@ class YoutubeDownloader:
             os.system(command_cleanup)
             c += 1
 
+    def writeLinks2txt(self, filename):
+        txtfile = open(filename, 'w')
+        for link in self.mLinks:
+            txtfile.write((link + '\n'))
+        txtfile.close()
 
-
+    def displayLinks(self):
+        for link in self.mLinks:
+            print link
 
 
 

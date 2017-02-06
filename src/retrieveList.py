@@ -62,4 +62,8 @@ class BillboardRetriever:
             print title
 
 
-
+    def writeList2txt(self, filename):
+        txtfile = open(filename, 'w')
+        for title, artist in self.mList:
+            txtfile.write((title + '_by_' + artist +'\n'))
+        txtfile.close()
