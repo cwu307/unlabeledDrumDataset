@@ -12,12 +12,16 @@ class YoutubeDownloader:
     mList = []
     mLinks = []
 
-    def __init__(self, inputList):
-        self.mList = inputList
+    def __init__(self, chartName, inputListPath):
+        inputList = open(inputListPath, 'r')
+        self.mChartName = chartName
+        for line in inputList.readlines():
+            tmp = line.split('    ')
+            self.mList.append((tmp[0], tmp[1][0:-1]))
 
     def getYoutubeLinks(self):
         # go through the list and retrieve the top search results
-        for title, artist in self.mList:
+        for artist, title in self.mList:
             # ==== The source following code: ====
             # http://stackoverflow.com/questions/29069444/returning-the-urls-from-a-youtube-search
             # Minor modification applied
@@ -37,8 +41,9 @@ class YoutubeDownloader:
         return self.mLinks
 
 
-    def getYoutubeFiles(self, txtFile, folderName):
+    def getYoutubeFiles(self, txtFile):
         c = 0
+        folderName = self.mChartName
         links = open(txtFile, 'r')
         for url in links.readlines():
             songTitle, artist = self.mList[c]
@@ -62,7 +67,10 @@ class YoutubeDownloader:
             os.system(command_cleanup)
             c += 1
 
-    def writeLinks2txt(self, filename):
+    def writeLinks2txt(self):
+        if not os.path.isdir('../links/'):
+            os.makedirs(os.path.dirname('../links/'))
+        filename = '../links/' + self.mChartName + '_links' + '.txt'
         txtfile = open(filename, 'w')
         for link in self.mLinks:
             txtfile.write((link + '\n'))

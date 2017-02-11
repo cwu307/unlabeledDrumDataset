@@ -3,11 +3,14 @@ Retrieve selected Billboard list
 CW @ GTCMT 2017
 '''
 import billboard
+import editdistance
+import os
 
 class BillboardRetriever:
     mMaxSongCount = 0
     mStepInMonth = 0 #
     mList = []
+    mListPrint = []
     mSongCount = 0
     mStartDate = '' # format: yyyy-mm-dd
     mLastDate  = ''
@@ -33,8 +36,32 @@ class BillboardRetriever:
             chart = billboard.ChartData(self.mChartName, inputDate)
             for i in range(0, len(chart)):
                 # check for duplications
-                if not (str(chart[i].title), str(chart[i].artist)) in self.mList:
-                    self.mList.append((str(chart[i].title), str(chart[i].artist)))
+                # 1) remove special characters
+                title = str(chart[i].title)
+                title = ''.join(e for e in title if e.isalnum())
+                artist = str(chart[i].artist)
+                artist = ''.join(e for e in artist if e.isalnum())
+
+                # 2) all lower cases
+                title = title.lower()
+                artist = artist.lower()
+
+                # 3) compute edit distance
+                all_dist = []
+                for e1, e2 in self.mList:
+                    d1 = editdistance.eval(artist, e1)
+                    d2 = editdistance.eval(title, e2)
+                    all_dist.append((d1 + d2))
+
+                # 4) add to the list depending on the editdistance
+                if len(all_dist) == 0:
+                    self.mList.append((artist, title))
+                    self.mSongCount += 1
+                    if self.mSongCount >= self.mMaxSongCount:
+                        break
+                elif (artist, title) not in self.mList and min(all_dist) >= 12:
+                    self.mList.append((artist, title))
+                    self.mListPrint.append((str(chart[i].artist), str(chart[i].title)))
                     self.mSongCount += 1
                     if self.mSongCount >= self.mMaxSongCount:
                         break
@@ -51,6 +78,7 @@ class BillboardRetriever:
             self.mLastDate = inputDate
             if not chart.previousDate:
                 break
+            self.mList.sort()
         return self.mList
 
 
@@ -58,12 +86,15 @@ class BillboardRetriever:
         print 'The cumulative list contains %d songs:'%len(self.mList)
         print 'The date of the last chart is %s'%self.mLastDate
         print '================================'
-        for title in self.mList:
-            print title
+        for artist, title in self.mListPrint:
+            print artist, title
 
 
-    def writeList2txt(self, filename):
+    def writeList2txt(self):
+        if not os.path.isdir('../lists/'):
+            os.makedirs(os.path.dirname('../lists/'))
+        filename = '../lists/' + self.mChartName + '_' + self.mStartDate + '.txt'
         txtfile = open(filename, 'w')
-        for title, artist in self.mList:
-            txtfile.write((title + '_by_' + artist +'\n'))
+        for artist, title in self.mListPrint:
+            txtfile.write((artist + '    ' + title +'\n'))
         txtfile.close()

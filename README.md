@@ -12,6 +12,7 @@
 This repository requires the following python libraries:
 
 - billboard
+- editdistance
 - bs4
 - pafy
 - youtube-dl
