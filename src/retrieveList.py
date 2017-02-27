@@ -26,13 +26,16 @@ class BillboardRetriever:
         mm = int(self.mStartDate[5:7])
         dd = int(self.mStartDate[8:])
 
-
+        preSongCount = []
         while self.mSongCount < self.mMaxSongCount:
+            preSongCount.append(self.mSongCount)
+            print self.mSongCount
             mm_str = str(mm)
             if len(mm_str) == 1: mm_str = '0' + mm_str
 
             # retrieve the list using Billboard API
             inputDate = str(yyyy) + '-' + mm_str + '-' + str(dd)
+
             chart = billboard.ChartData(self.mChartName, inputDate)
             for i in range(0, len(chart)):
                 # check for duplications
@@ -56,10 +59,13 @@ class BillboardRetriever:
                 # 4) add to the list depending on the editdistance
                 if len(all_dist) == 0:
                     self.mList.append((artist, title))
+                    self.mListPrint.append((str(chart[i].artist), str(chart[i].title)))
                     self.mSongCount += 1
                     if self.mSongCount >= self.mMaxSongCount:
                         break
-                elif (artist, title) not in self.mList and min(all_dist) >= 12:
+                #elif (artist, title) not in self.mList and min(all_dist) >= 16:
+                elif len([pair for pair in self.mList if title in pair]) == 0 and min(all_dist) >= 12:
+                    # check the name of the title as well
                     self.mList.append((artist, title))
                     self.mListPrint.append((str(chart[i].artist), str(chart[i].title)))
                     self.mSongCount += 1
@@ -76,9 +82,13 @@ class BillboardRetriever:
             mm = mm_new
 
             self.mLastDate = inputDate
-            if not chart.previousDate:
+            # stop the loop if the number of songs stop changing for 3 iterations
+            if float(sum(preSongCount[-3:]))/3.0 == self.mSongCount:
                 break
-            self.mList.sort()
+
+        # sort the list before return
+        self.mList.sort()
+        self.mListPrint.sort()
         return self.mList
 
 
@@ -95,6 +105,8 @@ class BillboardRetriever:
             os.makedirs(os.path.dirname('../lists/'))
         filename = '../lists/' + self.mChartName + '_' + self.mStartDate + '.txt'
         txtfile = open(filename, 'w')
+        number = 0
         for artist, title in self.mListPrint:
-            txtfile.write((artist + '    ' + title +'\n'))
+            number += 1
+            txtfile.write((artist + '    ' + title + '    ' + str(number) + '\n'))
         txtfile.close()

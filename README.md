@@ -6,6 +6,10 @@
 
 ## Instruction 
 
+Test Environment:
+- Mac OSX 10.11.6
+- Safari Version 10.0 (11602.1.50.0.10)
+- Python 2.7.12
 
 ## Dependencies
 
