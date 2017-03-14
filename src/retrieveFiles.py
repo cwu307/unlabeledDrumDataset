@@ -50,24 +50,25 @@ class YoutubeDownloader:
         for c in range(startID - 1, len(self.mLinks)):
             url = self.mLinks[c][0]
             artist, title, number  = self.mList[c]
-            #==== get video object
-            video = pafy.new(url)
-            bestaudio = video.getbestaudio()
+            if 'N/A' not in url:
+                #==== get video object
+                video = pafy.new(url)
+                bestaudio = video.getbestaudio()
 
-            #==== take care of filenames
-            tempFilename = 'temp' + '.' + str(bestaudio.extension)
-            bestaudio.download(tempFilename)
-            folderpath = '../audio/' + folderName
-            filename = ''.join(e for e in (title + artist) if e.isalnum())
-            outputFilePath = '../audio/' + folderName + '/' + str(number) + '_' + str(filename) + '.mp3'
-            if not os.path.isdir(folderpath):
-                os.mkdir(folderpath)
+                #==== take care of filenames
+                tempFilename = 'temp' + '.' + str(bestaudio.extension)
+                bestaudio.download(tempFilename)
+                folderpath = '../audio/' + folderName
+                filename = ''.join(e for e in (title + artist) if e.isalnum())
+                outputFilePath = '../audio/' + folderName + '/' + str(number) + '_' + str(filename) + '.mp3'
+                if not os.path.isdir(folderpath):
+                    os.mkdir(folderpath)
 
-            #==== convert temp file into mp3
-            command_temp2mp3 = 'ffmpeg -i ' + tempFilename + ' -acodec libmp3lame -ab 128k -ar 44100 ' + outputFilePath
-            os.system(command_temp2mp3)
-            command_cleanup = 'rm ' + tempFilename
-            os.system(command_cleanup)
+                #==== convert temp file into mp3
+                command_temp2mp3 = 'ffmpeg -i ' + tempFilename + ' -acodec libmp3lame -ab 128k -ar 44100 ' + outputFilePath
+                os.system(command_temp2mp3)
+                command_cleanup = 'rm ' + tempFilename
+                os.system(command_cleanup)
             c += 1
             print '%d' % c
 
@@ -116,8 +117,14 @@ class YoutubeDownloader:
             youtubeLink = 'https://www.youtube.com' + vid['href']
             topResults.append(youtubeLink)
 
+        #==== check search results
+        if len(topResults) == 0:
+            return '==== N/A ===='
+
         #==== for every link, check if the audio is downloadable
         for link in topResults:
+            if 'channel' in link or 'user' in link or 'list' in link:
+                break
             video = pafy.new(link)
             bestaudio = video.getbestaudio()
             if bestaudio is not None:

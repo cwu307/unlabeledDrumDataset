@@ -26,6 +26,7 @@ class BillboardRetriever:
         mm = int(self.mStartDate[5:7])
         dd = int(self.mStartDate[8:])
 
+        # inputDate = self.mStartDate
         preSongCount = []
         while self.mSongCount < self.mMaxSongCount:
             preSongCount.append(self.mSongCount)
@@ -82,6 +83,10 @@ class BillboardRetriever:
             mm = mm_new
 
             self.mLastDate = inputDate
+            # if chart.previousDate:
+            #     inputDate = chart.previousDate
+            # else:
+            #     break
             # stop the loop if the number of songs stop changing for 3 iterations
             if float(sum(preSongCount[-3:]))/3.0 == self.mSongCount:
                 break
