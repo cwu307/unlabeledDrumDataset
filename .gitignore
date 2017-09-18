@@ -1,6 +1,7 @@
-.idea/
-.gitignore
+*.idea
+*.gitignore
 audio/
+src/collectIsmir2017subset.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

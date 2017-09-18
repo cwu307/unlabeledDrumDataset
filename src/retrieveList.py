@@ -1,5 +1,8 @@
 '''
 Retrieve selected Billboard list
+Note:
+Given a billboard chart (of a selected music genre), this class handles the auto-query to the billboard
+and builds a cumulative list of the given genre. 
 CW @ GTCMT 2017
 '''
 import billboard
@@ -14,7 +17,7 @@ class BillboardRetriever:
     mSongCount = 0
     mStartDate = '' # format: yyyy-mm-dd
     mLastDate  = ''
-
+    
     def __init__(self, chartName, startDate, stepInMonth, maxSongCount):
         self.mChartName = chartName
         self.mStepInMonth = stepInMonth
@@ -39,7 +42,6 @@ class BillboardRetriever:
 
             chart = billboard.ChartData(self.mChartName, inputDate)
             for i in range(0, len(chart)):
-                # check for duplications
                 # 1) remove special characters
                 title = str(chart[i].title)
                 title = ''.join(e for e in title if e.isalnum())
@@ -57,6 +59,7 @@ class BillboardRetriever:
                     d2 = editdistance.eval(title, e2)
                     all_dist.append((d1 + d2))
 
+                # check for duplications
                 # 4) add to the list depending on the editdistance
                 if len(all_dist) == 0:
                     self.mList.append((artist, title))

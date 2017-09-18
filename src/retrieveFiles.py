@@ -1,5 +1,9 @@
 '''
 Retrieve youtube files according to the given list
+Note:
+Given the collected song names, this class handles the auto-query to youtube 
+and builds a cumulative list of youtube links to the songs. Finally, the files
+are downloaded
 CW @ GTCMT 2017
 '''
 import urllib
